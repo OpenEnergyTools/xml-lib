@@ -110,7 +110,7 @@ function handleSetAttributes({
       const [name, value] = entry as [string, string | null];
       if (value === null) element.removeAttribute(name);
       else element.setAttribute(name, value);
-    } catch (e) {
+    } catch (_e) {
       // do nothing if update doesn't work on this attribute
       delete oldAttributes[entry[0]];
     }
@@ -147,7 +147,7 @@ function handleSetAttributes({
           }
           element.setAttributeNS(ns, qualifiedName, value);
         }
-      } catch (e) {
+      } catch (_e) {
         delete oldAttributesNS[entry[0]];
       }
     }
@@ -189,7 +189,7 @@ function handleInsert({
       };
     // Node has no old parent -> redo is removing from new parent
     return { node };
-  } catch (e) {
+  } catch (_e) {
     // do nothing if insert doesn't work on these nodes
     return [];
   }
