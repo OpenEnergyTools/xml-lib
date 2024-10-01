@@ -3,7 +3,7 @@ import {esbuildPlugin} from '@web/dev-server-esbuild'
 
 export default /** @type {import("@web/test-runner").TestRunnerConfig} */ ({
   /** Test files to run */
-  files: ['**/*.spec.ts','!node_modules/**/*.spec.ts'],
+  files: ['**/*.spec.ts','!node_modules/**/*'],
 
   plugins: [esbuildPlugin({ ts: true })],
 
@@ -13,7 +13,7 @@ export default /** @type {import("@web/test-runner").TestRunnerConfig} */ ({
   },
 
   coverageConfig: {
-    exclude: ['testHelpers.ts'],
+    exclude: ['testHelpers.ts', 'node_modules/**/*'],
   },
 
   /** Compile JS for older browsers. Requires @web/dev-server-esbuild plugin */
