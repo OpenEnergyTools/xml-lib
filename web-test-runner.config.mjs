@@ -12,6 +12,9 @@ export default /** @type {import("@web/test-runner").TestRunnerConfig} */ ({
     exportConditions: ['browser', 'development'],
   },
 
+  coverageConfig: {
+    exclude: ['testHelpers.ts'],
+  },
 
   /** Compile JS for older browsers. Requires @web/dev-server-esbuild plugin */
   // esbuildTarget: 'auto',

@@ -19,4 +19,4 @@ export {
   setAttribute,
   setTextContent,
   simpleEdit,
-} from "./testhelpers.spec.js";
+} from "./testHelpers.js";

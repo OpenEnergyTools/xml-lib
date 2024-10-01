@@ -11,7 +11,7 @@ import {
   UndoRedoTestCase,
   undoRedoTestCases,
   xmlAttributeName,
-} from "./testhelpers.spec.js";
+} from "./testHelpers.js";
 
 import { EditV2, handleEdit, Insert } from "./handleEdit.js";
 
