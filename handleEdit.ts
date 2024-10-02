@@ -5,24 +5,25 @@ export type Insert = {
   reference: Node | null;
 };
 
-/** Intent to remove a node from its ownerDocument */
+/** Intent to remove a `node` from its `ownerDocument` */
 export type Remove = {
   node: Node;
 };
 
-/** Intent to set the `textContent` of `element`. */
+/** Intent to set the `textContent` of `element` */
 export type SetTextContent = {
   element: Element;
   textContent: string;
 };
 
-/** Intent to set or remove (if null) `attributes` on `element`. */
+/** Intent to set or remove (if `null`) `attributes`(-`NS`) on `element` */
 export type SetAttributes = {
   element: Element;
   attributes: Partial<Record<string, string | null>>;
   attributesNS: Partial<Record<string, Partial<Record<string, string | null>>>>;
 };
 
+/** Intent to change some XMLDocuments */
 export type EditV2 =
   | Insert
   | SetAttributes
@@ -56,7 +57,6 @@ export function isInsert(edit: EditV2): edit is Insert {
   );
 }
 
-/** EDIT HANDLING */
 function handleSetTextContent({
   element,
   textContent,
@@ -97,26 +97,26 @@ function handleSetAttributes({
   const oldAttributes = { ...attributes };
   const oldAttributesNS = { ...attributesNS };
 
-  // Save `element`'s `attributes` for undo
+  // save element's non-prefixed attributes for undo
   Object.keys(attributes)
     .reverse()
     .forEach((name) => {
       oldAttributes[name] = element.getAttribute(name);
     });
 
-  // Change `element`'s `attributes`
+  // change element's non-prefixed attributes
   for (const entry of Object.entries(attributes)) {
     try {
       const [name, value] = entry as [string, string | null];
       if (value === null) element.removeAttribute(name);
       else element.setAttribute(name, value);
     } catch (_e) {
-      // do nothing if update doesn't work on this attribute
+      // undo nothing if update didn't work on this attribute
       delete oldAttributes[entry[0]];
     }
   }
 
-  // Save `element`'s namespaced `attributes` for undo action
+  // save element's namespaced attributes for undo
   Object.entries(attributesNS).forEach(([ns, attrs]) => {
     Object.keys(attrs!)
       .reverse()
@@ -128,7 +128,7 @@ function handleSetAttributes({
       });
   });
 
-  // Change `element`'s namespaced `attributes`
+  // change element's namespaced attributes
   for (const nsEntry of Object.entries(attributesNS)) {
     const [ns, attrs] = nsEntry as [
       string,
@@ -181,22 +181,21 @@ function handleInsert({
     const { parentNode, nextSibling } = node;
     parent.insertBefore(node, reference);
     if (parentNode)
-      // Move node from old parent to new parent -> redo is moving back to old parent
+      // undo: move child node back to original place
       return {
         node,
         parent: parentNode,
         reference: nextSibling,
       };
-    // Node has no old parent -> redo is removing from new parent
+    // undo: remove orphaned node
     return { node };
   } catch (_e) {
-    // do nothing if insert doesn't work on these nodes
+    // undo nothing if insert doesn't work on these nodes
     return [];
   }
 }
 
-/** A utility function that changes a XMLDocument based on users edit intent
- *  defined as EditV2. */
+/** Applies an EditV2, returning the corresponding "undo" EditV2. */
 export function handleEdit(edit: EditV2): EditV2 {
   if (isInsert(edit)) return handleInsert(edit);
   if (isRemove(edit)) return handleRemove(edit);
