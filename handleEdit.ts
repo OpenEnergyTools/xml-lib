@@ -89,6 +89,13 @@ function uniqueNSPrefix(element: Element, ns: string): string {
   return `ens${i}`;
 }
 
+const xmlAttributeName =
+  /^(?!xml|Xml|xMl|xmL|XMl|xML|XmL|XML)[A-Za-z_][A-Za-z0-9-_.]*(:[A-Za-z_][A-Za-z0-9-_.]*)?$/;
+
+function validName(name: string): boolean {
+  return xmlAttributeName.test(name);
+}
+
 function handleSetAttributes({
   element,
   attributes,
@@ -119,12 +126,18 @@ function handleSetAttributes({
   // save element's namespaced attributes for undo
   Object.entries(attributesNS).forEach(([ns, attrs]) => {
     Object.keys(attrs!)
+      .filter(validName)
       .reverse()
       .forEach((name) => {
         oldAttributesNS[ns] = {
           ...oldAttributesNS[ns],
-          [name]: element.getAttributeNS(ns, name),
+          [name]: element.getAttributeNS(ns, name.split(":").pop()!),
         };
+      });
+    Object.keys(attrs!)
+      .filter((name) => !validName(name))
+      .forEach((name) => {
+        delete oldAttributesNS[ns]![name];
       });
   });
 
@@ -134,11 +147,14 @@ function handleSetAttributes({
       string,
       Partial<Record<string, string | null>>,
     ];
-    for (const entry of Object.entries(attrs)) {
+    for (const entry of Object.entries(attrs).filter(([name]) =>
+      validName(name),
+    )) {
       try {
         const [name, value] = entry as [string, string | null];
-        if (value === null) element.removeAttributeNS(ns, name);
-        else {
+        if (value === null) {
+          element.removeAttributeNS(ns, name.split(":").pop()!);
+        } else {
           let qualifiedName = name;
           if (!qualifiedName.includes(":")) {
             let prefix = element.lookupPrefix(ns);
@@ -148,7 +164,7 @@ function handleSetAttributes({
           element.setAttributeNS(ns, qualifiedName, value);
         }
       } catch (_e) {
-        delete oldAttributesNS[entry[0]];
+        delete oldAttributesNS[ns]![entry[0]];
       }
     }
   }

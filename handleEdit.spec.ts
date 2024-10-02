@@ -18,14 +18,14 @@ import { EditV2, handleEdit, Insert } from "./handleEdit.js";
 
 import { assert, property } from "fast-check";
 
-describe("Utility function to handle EditV2 edits", () => {
+describe("handleEdit", () => {
   let sclDoc: XMLDocument;
 
   beforeEach(async () => {
     sclDoc = new DOMParser().parseFromString(sclDocString, "application/xml");
   });
 
-  it("does not do anything on invalid input", () => {
+  it("does nothing given invalid input", () => {
     const sclDocStringBefore = new XMLSerializer().serializeToString(sclDoc);
 
     const parent = sclDoc.documentElement;
@@ -45,7 +45,7 @@ describe("Utility function to handle EditV2 edits", () => {
     expect(sclDocStringBefore).to.equal(sclDocStringAfter);
   });
 
-  it("inserts an element on Insert", () => {
+  it("inserts an element given an Insert", () => {
     const parent = sclDoc.documentElement;
     const node = sclDoc.createElement("test");
     const reference = sclDoc.querySelector("Substation");
@@ -56,13 +56,13 @@ describe("Utility function to handle EditV2 edits", () => {
     );
   });
 
-  it("removes an element on Remove", () => {
+  it("removes an element given a Remove", () => {
     const node = sclDoc.querySelector("Substation")!;
     handleEdit({ node });
     expect(sclDoc.querySelector("Substation")).to.not.exist;
   });
 
-  it("updates an element's attributes on SetAttributes", () => {
+  it("updates an element's attributes given a SetAttributes", () => {
     const element = sclDoc.querySelector("Substation")!;
     handleEdit({
       element,
@@ -98,7 +98,7 @@ describe("Utility function to handle EditV2 edits", () => {
     expect(element.getAttribute("ens3:attr2")).to.equal("value3");
   });
 
-  it("sets an element's textContent on SetTextContent", () => {
+  it("sets an element's textContent given a SetTextContent", () => {
     const element = sclDoc.querySelector("SCL")!;
 
     const newTextContent = "someNewTextContent";
@@ -129,14 +129,14 @@ describe("Utility function to handle EditV2 edits", () => {
     );
   });
 
-  it("undoes a committed edit on undo() call", () => {
+  it("returns an edit that undoes the original edit", () => {
     const node = sclDoc.querySelector("Substation")!;
     const undoEdit = handleEdit({ node }); // do edit
     handleEdit(undoEdit); // undo edit
     expect(sclDoc.querySelector("Substation")).to.exist;
   });
 
-  it("redoes an undone edit on redo() call", () => {
+  it("returns an undo the return value of which is a redo", () => {
     const node = sclDoc.querySelector("Substation")!;
     const undoEdit = handleEdit({ node });
     const redoEdit = handleEdit(undoEdit);
@@ -145,7 +145,7 @@ describe("Utility function to handle EditV2 edits", () => {
   });
 
   describe("generally", () => {
-    it("inserts elements on Insert edit events", () =>
+    it("inserts elements given Inserts", () =>
       assert(
         property(
           testDocs.chain(([doc1, doc2]) => {
@@ -164,7 +164,7 @@ describe("Utility function to handle EditV2 edits", () => {
         ),
       ));
 
-    it("set's an element's textContent on SetTextContent edit events", () =>
+    it("set's an element's textContent given SetTextContents", () =>
       assert(
         property(
           testDocs.chain(([doc1, doc2]) => {
@@ -179,7 +179,7 @@ describe("Utility function to handle EditV2 edits", () => {
         ),
       ));
 
-    it("updates default- and foreign-namespace attributes on UpdateNS events", () =>
+    it("updates attributes given SetAttributes", () =>
       assert(
         property(
           testDocs.chain(([{ nodes }]) => setAttribute(nodes)),
@@ -215,7 +215,7 @@ describe("Utility function to handle EditV2 edits", () => {
         ),
       )).timeout(20000);
 
-    it("removes elements on Remove edit events", () =>
+    it("removes elements given Removes", () =>
       assert(
         property(
           testDocs.chain(([{ nodes }]) => remove(nodes)),
@@ -226,7 +226,7 @@ describe("Utility function to handle EditV2 edits", () => {
         ),
       ));
 
-    it("undoes up to n edits on undo(n) call", () =>
+    it("leaves the document unchanged after undoing all edits", () =>
       assert(
         property(
           testDocs.chain((docs) => undoRedoTestCases(...docs)),
@@ -251,7 +251,7 @@ describe("Utility function to handle EditV2 edits", () => {
         ),
       )).timeout(20000);
 
-    it("redoes up to n edits on redo(n) call", () =>
+    it("changes the document the same way when redoing undone edits", () =>
       assert(
         property(
           testDocs.chain((docs) => undoRedoTestCases(...docs)),

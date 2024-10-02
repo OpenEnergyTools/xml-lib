@@ -105,16 +105,9 @@ export function setAttribute(nodes: Node[]): Arbitrary<SetAttributes> {
   // object() instead of nested dictionary() necessary for performance reasons
   const attributesNS = objectArbitrary({
     key: webUrl(),
-    values: [stringArbitrary(), constant(null)],
-    maxDepth: 1,
-  }).map(
-    (aNS) =>
-      Object.fromEntries(
-        Object.entries(aNS).filter(
-          ([_, attrs]) => attrs && !(typeof attrs === "string"),
-        ),
-      ) as Partial<Record<string, Partial<Record<string, string | null>>>>,
-  );
+    values: [attributes],
+    maxDepth: 0,
+  }) as Arbitrary<Record<string, Record<string, string | null>>>;
   return record({ element, attributes, attributesNS });
 }
 
