@@ -1,21 +1,21 @@
 {
   "compilerOptions": {
-    "target": "es2020",
+    "target": "es2018",
     "module": "esnext",
-    "esModuleInterop": true,
-    "resolveJsonModule": true,
     "moduleResolution": "node",
     "noEmitOnError": true,
-    "lib": ["es2020", "dom"],
+    "lib": ["es2018", "dom"],
     "strict": true,
-    "allowJs": true,
-    "skipLibCheck": true,
-    "sourceMap": true,
-    "declaration": true,
+    "esModuleInterop": false,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
     "outDir": "dist",
+    "sourceMap": true,
+    "inlineSources": true,
     "rootDir": "./",
+    "declaration": true,
+    "incremental": true
   },
-  "files": [
-    "./index.ts"
-  ],
+  "include": ["**/*.ts"]
 }
