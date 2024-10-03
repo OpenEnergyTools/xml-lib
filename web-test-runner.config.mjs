@@ -1,11 +1,8 @@
-// import { playwrightLauncher } from '@web/test-runner-playwright';
-import {esbuildPlugin} from '@web/dev-server-esbuild'
 
 export default /** @type {import("@web/test-runner").TestRunnerConfig} */ ({
   /** Test files to run */
-  files: ['**/*.spec.ts','!node_modules/**/*'],
+  files: ['dist/**/*.spec.js','!node_modules/**/*'],
 
-  plugins: [esbuildPlugin({ ts: true })],
 
   /** Resolve bare module imports */
   nodeResolve: {
