@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-expressions */
-import { expect } from "chai";
+import { expect } from "@open-wc/testing";
 
 import {
   insert,
@@ -52,7 +51,7 @@ describe("handleEdit", () => {
     handleEdit({ parent, node, reference });
     expect(sclDoc.documentElement.querySelector("test")).to.have.property(
       "nextSibling",
-      reference,
+      reference
     );
   });
 
@@ -121,11 +120,11 @@ describe("handleEdit", () => {
     ]);
     expect(sclDoc.documentElement.querySelector("test1")).to.have.property(
       "nextSibling",
-      node2,
+      node2
     );
     expect(sclDoc.documentElement.querySelector("test2")).to.have.property(
       "nextSibling",
-      reference,
+      reference
     );
   });
 
@@ -160,8 +159,8 @@ describe("handleEdit", () => {
                 edit.node.nextSibling === edit.reference
               );
             return true;
-          },
-        ),
+          }
+        )
       ));
 
     it("set's an element's textContent given SetTextContents", () =>
@@ -175,8 +174,8 @@ describe("handleEdit", () => {
             handleEdit(edit);
 
             return edit.element.textContent === edit.textContent;
-          },
-        ),
+          }
+        )
       ));
 
     it("updates attributes given SetAttributes", () =>
@@ -190,11 +189,11 @@ describe("handleEdit", () => {
                 .filter(([name]) => xmlAttributeName.test(name))
                 .map((entry) => entry as [string, string | null])
                 .every(
-                  ([name, value]) => edit.element.getAttribute(name) === value,
+                  ([name, value]) => edit.element.getAttribute(name) === value
                 ) &&
               Object.entries(edit.attributesNS)
                 .map(
-                  (entry) => entry as [string, Record<string, string | null>],
+                  (entry) => entry as [string, Record<string, string | null>]
                 )
                 .every(([ns, attributes]) =>
                   Object.entries(attributes)
@@ -206,13 +205,13 @@ describe("handleEdit", () => {
                           ns,
                           name.includes(":")
                             ? <string>name.split(":", 2)[1]
-                            : name,
-                        ) === value,
-                    ),
+                            : name
+                        ) === value
+                    )
                 )
             );
-          },
-        ),
+          }
+        )
       )).timeout(20000);
 
     it("removes elements given Removes", () =>
@@ -222,8 +221,8 @@ describe("handleEdit", () => {
           ({ node }) => {
             handleEdit({ node });
             return !node.parentNode;
-          },
-        ),
+          }
+        )
       ));
 
     it("leaves the document unchanged after undoing all edits", () =>
@@ -232,7 +231,7 @@ describe("handleEdit", () => {
           testDocs.chain((docs) => undoRedoTestCases(...docs)),
           ({ doc1, doc2, edits }: UndoRedoTestCase) => {
             const [oldDoc1, oldDoc2] = [doc1, doc2].map((doc) =>
-              doc.cloneNode(true),
+              doc.cloneNode(true)
             );
             const undoEdits: EditV2[] = [];
             edits.forEach((a: EditV2) => {
@@ -241,14 +240,14 @@ describe("handleEdit", () => {
             });
             if (edits.length) handleEdit(undoEdits);
             expect(doc1).to.satisfy((doc: XMLDocument) =>
-              doc.isEqualNode(oldDoc1),
+              doc.isEqualNode(oldDoc1)
             );
             expect(doc2).to.satisfy((doc: XMLDocument) =>
-              doc.isEqualNode(oldDoc2),
+              doc.isEqualNode(oldDoc2)
             );
             return true;
-          },
-        ),
+          }
+        )
       )).timeout(20000);
 
     it("changes the document the same way when redoing undone edits", () =>
@@ -261,7 +260,7 @@ describe("handleEdit", () => {
               undoEdits.unshift(handleEdit(a));
             });
             const [oldDoc1, oldDoc2] = [doc1, doc2].map((doc) =>
-              new XMLSerializer().serializeToString(doc),
+              new XMLSerializer().serializeToString(doc)
             );
             const redoEdits: EditV2[] = [];
 
@@ -270,11 +269,11 @@ describe("handleEdit", () => {
               handleEdit(redoEdits);
             }
             const [newDoc1, newDoc2] = [doc1, doc2].map((doc) =>
-              new XMLSerializer().serializeToString(doc),
+              new XMLSerializer().serializeToString(doc)
             );
             return oldDoc1 === newDoc1 && oldDoc2 === newDoc2;
-          },
-        ),
+          }
+        )
       )).timeout(20000);
   });
 });
