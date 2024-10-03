@@ -20,18 +20,21 @@
   "scripts": {
     "lint": "eslint . && prettier \"**/*.ts\" --check --ignore-path .gitignore",
     "format": "eslint . --fix && prettier \"**/*.ts\" --write --ignore-path .gitignore",
-    "test": "wtr --coverage",
-    "test:watch": "wtr --watch --coverage",
-    "build": "npx rimraf dist && tsc",
-    "semantic-release": "semantic-release"
+    "semantic-release": "semantic-release",
+    "test": "npm run build && wtr --coverage",
+    "test:watch": "npm run build && concurrently -k -r \"tsc -b --watch --preserveWatchOutput\" \"wtr --watch --coverage\"",
+    "build": "npx rimraf dist && tsc"
+  },
+  "dependencies": {
+    "lit": "^2.2.7"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.8",
+    "@open-wc/testing": "3.2.2",
     "@typescript-eslint/eslint-plugin": "^8.8.0",
     "@typescript-eslint/parser": "^8.8.0",
     "@web/dev-server-esbuild": "1.0.2",
     "@web/test-runner": "0.19.0",
-    "chai": "npm:@esm-bundle/chai@^4.3.4-fix.0",
     "concurrently": "^9.0.1",
     "eslint": "^9.11.1",
     "fast-check": "^3.22.0",
