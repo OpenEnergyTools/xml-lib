@@ -23,4 +23,4 @@ export {
 
 export { Editor } from "./Editor.js";
 
-export { newEditEventV2 } from "./edit-event.js";
+export { newEditEventV2 } from "./edit-event-v2.js";

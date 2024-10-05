@@ -1,9 +1,12 @@
 import { LitElement } from "lit";
 import { state } from "lit/decorators.js";
 
-import { EditEventV2 } from "./edit-event.js";
+import { EditEventV2 } from "./edit-event-v2.js";
 
 import { EditV2, handleEdit } from "./handleEdit.js";
+
+import { EditEvent } from "./edit-event.js";
+import { convertEdit } from "./convertEditToEditV2.js";
 
 export type LogEntry = {
   undo: EditV2;
@@ -95,6 +98,17 @@ export class Editor extends LitElement {
     this.updateVersion();
   }
 
+  handleEditEventV1(event: EditEvent) {
+    const edit = event.detail;
+    const editV2 = convertEdit(edit);
+
+    this.history.splice(this.editCount); // cut history at editCount
+    
+    this.history.push({ undo: handleEdit(editV2), redo: editV2 });
+
+    this.editCount = this.history.length;
+  }
+
   /** Undo the last `n` [[Edit]]s committed */
   undo(n = 1) {
     if (!this.canUndo || n < 1) return;
@@ -115,6 +129,10 @@ export class Editor extends LitElement {
 
   constructor() {
     super();
+
+    this.addEventListener("oscd-edit", (event) =>
+      this.handleEditEventV1(event)
+    );
 
     this.addEventListener("oscd-edit-v2", (event) =>
       this.handleEditEvent(event)

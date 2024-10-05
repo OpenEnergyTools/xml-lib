@@ -18,11 +18,12 @@ import {
   xmlAttributeName,
 } from "./testHelpers.js";
 
-import { newEditEventV2 } from "./edit-event.js";
+import { newEditEventV2 } from "./edit-event-v2.js";
 
 import { EditV2, isSetAttributes, isSetTextContent } from "./handleEdit.js";
 
 import { Editor } from "./Editor.js";
+import { newEditEvent } from "./edit-event.js";
 
 customElements.define("editor-element", Editor);
 
@@ -92,6 +93,29 @@ describe("Utility function to handle EditV2 edits", () => {
     expect(element.getAttribute("ens2:attr2")).to.equal("value2");
     expect(element.getAttribute("ens3:attr")).to.equal("value3");
     expect(element.getAttribute("ens3:attr2")).to.equal("value3");
+  });
+
+  it("updates an element's attributes on Update", () => {
+    const element = sclDoc.querySelector("Substation")!;
+    editor.dispatchEvent(
+      newEditEvent({
+        element,
+        attributes: {
+          name: "A2",
+          desc: null,
+          ["__proto__"]: "a string", // covers a rare edge case branch
+          "myns:attr": {
+            value: "namespaced value",
+            namespaceURI: "http://example.org/myns",
+          },
+        },
+      })
+    );
+
+    expect(element).to.have.attribute("name", "A2");
+    expect(element).to.not.have.attribute("desc");
+    expect(element).to.not.have.attribute("__proto__"); // cannot convert this key
+    expect(element).to.have.attribute("myns:attr", "namespaced value");
   });
 
   it("sets an element's textContent on SetTextContent", () => {
