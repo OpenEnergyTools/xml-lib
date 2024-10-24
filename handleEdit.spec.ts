@@ -14,7 +14,8 @@ import {
   xmlAttributeName,
 } from "./testHelpers.js";
 
-import { EditV2, handleEdit, Insert } from "./handleEdit.js";
+import { EditV2, Insert } from "./editv2.js";
+import { handleEdit } from "./handleEdit.js";
 
 import { assert, property } from "fast-check";
 

@@ -1,6 +1,5 @@
 export {
   EditV2,
-  handleEdit,
   Insert,
   Remove,
   SetAttributes,
@@ -10,7 +9,9 @@ export {
   isRemove,
   isSetAttributes,
   isSetTextContent,
-} from "./handleEdit.js";
+} from "./editv2.js";
+
+export { handleEdit } from "./handleEdit.js";
 
 export {
   complexEdit,

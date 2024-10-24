@@ -18,7 +18,7 @@ import {
   Remove,
   SetAttributes,
   SetTextContent,
-} from "./handleEdit.js";
+} from "./editv2.js";
 
 export const xmlAttributeName =
   /^(?!xml|Xml|xMl|xmL|XMl|xML|XmL|XML)[A-Za-z_][A-Za-z0-9-_.]*(:[A-Za-z_][A-Za-z0-9-_.]*)?$/;
