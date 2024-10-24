@@ -11,7 +11,11 @@ export {
   isSetTextContent,
 } from "./editv2.js";
 
+export { Edit, Update } from "./editv1.js";
+
 export { handleEdit } from "./handleEdit.js";
+
+export { convertEdit } from "./convertEdit.js";
 
 export {
   complexEdit,
