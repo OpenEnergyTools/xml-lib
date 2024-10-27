@@ -5,13 +5,14 @@ export {
   SetAttributes,
   SetTextContent,
   isComplex,
+  isEditV2,
   isInsert,
   isRemove,
   isSetAttributes,
   isSetTextContent,
 } from "./editv2.js";
 
-export { Edit, Update } from "./editv1.js";
+export { Edit, Update, isEdit } from "./editv1.js";
 
 export { handleEdit } from "./handleEdit.js";
 

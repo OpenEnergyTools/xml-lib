@@ -41,5 +41,7 @@ describe("type guard functions for editv1", () => {
     expect([update, remove, insert]).to.satisfy(isEdit));
 
   it("returns false on editV2 array", () =>
-    expect([setAttributes, remove, insert, setTextContent]).to.not.satisfy(isEdit));
+    expect([setAttributes, remove, insert, setTextContent]).to.not.satisfy(
+      isEdit,
+    ));
 });
