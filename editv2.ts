@@ -36,7 +36,10 @@ export function isComplex(edit: EditV2): edit is EditV2[] {
 }
 
 export function isSetTextContent(edit: EditV2): edit is SetTextContent {
-  return "element" in edit && "textContent" in edit;
+  return (
+    (edit as SetTextContent).element !== undefined &&
+    (edit as SetTextContent).textContent !== undefined
+  );
 }
 
 export function isRemove(edit: EditV2): edit is Remove {
@@ -46,7 +49,11 @@ export function isRemove(edit: EditV2): edit is Remove {
 }
 
 export function isSetAttributes(edit: EditV2): edit is SetAttributes {
-  return "element" in edit && "attributesNS" in edit && "attributes" in edit;
+  return (
+    (edit as SetAttributes).element !== undefined &&
+    (edit as SetAttributes).attributes !== undefined &&
+    (edit as SetAttributes).attributesNS !== undefined
+  );
 }
 
 export function isInsert(edit: EditV2): edit is Insert {
@@ -54,5 +61,17 @@ export function isInsert(edit: EditV2): edit is Insert {
     (edit as Insert).parent !== undefined &&
     (edit as Insert).node !== undefined &&
     (edit as Insert).reference !== undefined
+  );
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function isEditV2(edit: any): edit is EditV2 {
+  if (isComplex(edit)) return !edit.some((e) => !isEditV2(e));
+
+  return (
+    isSetAttributes(edit) ||
+    isSetTextContent(edit) ||
+    isInsert(edit) ||
+    isRemove(edit)
   );
 }

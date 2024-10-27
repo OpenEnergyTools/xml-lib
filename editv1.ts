@@ -1,3 +1,5 @@
+import { isSetAttributes } from "./editv2";
+
 /** Intent to `parent.insertBefore(node, reference)` */
 export type Insert = {
   parent: Node;
@@ -39,7 +41,10 @@ export function isNamespaced(
 }
 
 export function isUpdate(edit: Edit): edit is Update {
-  return (edit as Update).element !== undefined;
+  return (
+    (edit as Update).element !== undefined &&
+    (edit as Update).attributes !== undefined
+  );
 }
 
 export function isRemove(edit: Edit): edit is Remove {
@@ -49,3 +54,13 @@ export function isRemove(edit: Edit): edit is Remove {
 }
 
 export type EditEvent<E extends Edit = Edit> = CustomEvent<E>;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function isEdit(edit: any): edit is Edit {
+  if (isComplex(edit)) return !edit.some((e) => !isEdit(e));
+
+  return (
+    !isSetAttributes(edit) &&
+    (isUpdate(edit) || isInsert(edit) || isRemove(edit))
+  );
+}
